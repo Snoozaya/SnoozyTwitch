@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weighted Random Index</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weighted Random Index</h1>
+    <p id="result"></p>
+    <script>
+        function getWeightedRandomIndex(weights) {
+            const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+            const normalizedWeights = weights.map(weight => weight / totalWeight);
+            const cumulativeWeights = [];
+            normalizedWeights.reduce((sum, weight, index) => {
+                sum += weight;
+                cumulativeWeights[index] = sum;
+                return sum;
+            }, 0);
+            const random = Math.random();
+            for (let i = 0; i < cumulativeWeights.length; i++) {
+                if (random <= cumulativeWeights[i]) {
+                    return i;
+                }
+            }
+            throw new Error('Invalid weights array');
+        }
+
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                weights: JSON.parse(params.get('weights')),
+                responseType: params.get('responseType') || 'html'
+            };
+        }
+
+        function outputResult(responseType, index) {
+            if (responseType === 'json') {
+                const jsonResponse = JSON.stringify({ "index": index });
+                document.body.innerHTML = `<pre>${jsonResponse}</pre>`;
+                document.body.style.fontFamily = 'monospace';
+            } else if (responseType === 'text') {
+                document.body.innerHTML = `<pre>${index}</pre>`;
+                document.body.style.fontFamily = 'monospace';
+            } else {
+                document.getElementById('result').textContent = `Selected index: ${index}`;
+            }
+        }
+
+        window.onload = function() {
+            try {
+                const params = getQueryParams();
+                const index = getWeightedRandomIndex(params.weights);
+                outputResult(params.responseType, index);
+            } catch (error) {
+                document.getElementById('result').textContent = `Error: ${error.message}`;
+            }
+        };
+    </script>
+</body>
+</html>
