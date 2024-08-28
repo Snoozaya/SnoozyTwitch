@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+	<link rel="icon" href="favicon.png">
+	<head>
+		<title>Snoozaya Twitch Tools</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0">
+		
+		<style>
+			body{margin: 0;padding: 0;width: 100%;background-color: #404040;}
+			
+			.music-item {
+				width: 100%;
+				margin: 0;
+			}
+			
+			.category-name {
+				border-style: none;
+				border-width: 20;
+				background: none;
+				padding: 0;
+				padding: 25;
+				background-color: #000;
+				font-weight: bold;
+				font-size: 48px;
+				display: inline-block;
+				white-space: nowrap;
+			}
+			
+			.search_bar {
+				display: inline;
+				margin: 0;
+				color: #000;
+				margin: 10px 0px;
+			}
+			
+			.icon, .icon-text {
+				display: block;
+				vertical-align: middle;
+				white-space: nowrap;
+				width: 128px;
+				height: 128px;
+				transform: translateY(-64px);
+				float: left;
+				text-align: center;
+				margin: 0 auto;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			
+			.music-copy-input {
+				border-style: none;
+				border-width: 0;
+				background: none;
+				padding: 0;
+				background-color: #000;
+				margin-top: -1px;
+				font-weight: bold;
+				font-size: 24px;
+				vertical-align: middle;
+				display: inline-block;
+			}
+			
+			.music-copy-button {
+				display: inline;
+				margin: 0;
+				color: #aaa;
+			}
+			
+			.music-data-list * {
+				font-size: 85%;
+				display: inline;
+				margin: 0;
+				color: #aaa;
+			}
+			
+			.music-data-source {
+				display: inline;
+				margin: 0;
+				color: #aaa;
+			}
+			
+			.music-data-division {
+				margin: 0.5em 1em;
+			}
+			
+			#content {
+				box-sizing: border-box;
+				width: 90%;
+				max-width: 80em;
+				margin: 0 auto;
+				padding: 2em;
+				padding-bottom: 5em;
+				background-color: #000;
+			}
+			
+			body, input, a {
+				font-size: 18px;
+				font-family: "Arial Black";
+				text-align: left;
+				line-height: 24px;
+				color: #fff;
+				width: 100%;
+			}
+			
+			p {
+				display: block;
+				margin-block-start: 1em;
+				margin-block-end: 1em;
+				margin-inline-start: 0px;
+				margin-inline-end: 0px;
+			}
+			
+			h1 {
+				margin: 0.5em 0;
+			}
+			
+			h1, h1 * {
+				font-size: 32px;
+			}
+			
+			hr {
+				margin: 0;
+				height: 0.75em;
+				border-style: none;
+				border-width: 0;
+				
+				background: linear-gradient(to right, rgba(100,100,100,1), rgba(100,100,100,0));
+			}
+			
+			hr.minor {
+				height: 0.25em;
+				margin: 1.5em 0;
+				background: linear-gradient(to right, rgba(100,100,100,1), rgba(100,100,100,0));
+			}
+		</style>
+	</head>
+	
+	<body>
+		<div id="content">
+			<h1>
+				Twitch tools for
+				<span>
+					<a href="https://www.twitch.tv/Snoozaya_">twitch.tv/Snoozaya_</a>
+				</span>
+			</h1>
+			<hr>
+			
+			<div id='tools-help'>
+                <p>
+                    I have tools for:
+                </p>
+                 <ul>
+                  <li>shoutouts [ready]</li>
+                  <li>play clip [in progress]</li>
+                  <li>clip slideshow [in progress]</li>
+                 </ul> 
+                
+			</div>
+			<div id="tools-list">
+                <div class="tool-item">
+                    <h2>https://snoozaya.github.io/twitch/shoutouts2</h2>
+                    <p>channel=$targetuserdisplayname</p>
+                    <p>showClip=true</p>
+                    <p>themeOption=2</p>
+                    <p>maxDuration=29</p>
+                    <p>limit=100</p>
+                </div>
+                
+                <div class="tool-item">
+                    <h2>https://snoozaya.github.io/twitch/playclip</h2>
+                    <p>clipURl=$url</p>
+                </div>
+                
+                <div class="tool-item">
+                </div>
+                
+                <div class="tool-item">
+                </div>
+			</div>
+			
+			<noscript>
+				<hr class="minor">
+				<h3><strong>This page requires javascript to work as all the songs are loaded from a .json file. Please enable javascript for this page to make it work properly!</strong></h3>
+			</noscript>
+			
+
+	</body>
+</html>
