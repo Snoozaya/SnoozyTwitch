@@ -1,11 +1,3 @@
-$(".bingo-card__item").on('click', function() {
-    $(this).toggleClass('active');
-});
-
-$('.clear-button').on('click', function(){
-    $('.bingo-card__item').removeClass('active');
-});
-
 const freeSpace = "zaya is behind on chat"
 const bingoOptions = [
     "Zaya tells someone to “get fucked”",
@@ -15,7 +7,7 @@ const bingoOptions = [
     "professional strimmer moment / technical issues",
     "cat walks in front of camera",
     "Zaya mentions twilight unprompted",
-    "clip shoutouts freeze/bug",
+    "Zaya greets or mentions you",
     "someone asks if contacts or fangs are real",
     "Zaya gets raided",
     "Zaya fake cries",
@@ -24,15 +16,14 @@ const bingoOptions = [
     "Zaya word garbles brkjbeikrfbekrf",
     "Zaya falls for the eyewear-roll",
     "Zaya leaks dms",
-    "the unholy trinity of redeems (dr who, yop, secret tunnel)",
+    "unholy trinity of sound redeems",
     "Yeeves message gets deleted",
     "Zaya thirsts over Yop",
     "Zaya gets jumpscared",
-    "cats copypasta",
+    "cats copypasta (no cheating)",
     "Finn spit on hand",
     "Zaya info dumps",
-    "",
-    ""
+    "Zaya missed your msg"
 ];
 
 function shuffleArray(array) {
@@ -52,44 +43,60 @@ function buildBingoCard() {
     let shuffledOptions = [...bingoOptions];
     shuffleArray(shuffledOptions);
     
-    for (var i=0; i<numCards; i++) {
+    for (var i=0; i<=numCards; i++) {
         if (i == numFreeSpace) {
             bingoCard[i] = {text: freeSpace, isMarked: false};
         }
         else if (shuffledOptions.length > 0) {
-            bingoCard[i] = {text: bingoOptions.pop(), isMarked: false};
+            bingoCard[i] = {text: shuffledOptions.pop(), isMarked: false};
         }
         else {
             bingoCard[i] = {text: "", isMarked: false};
         }
     }
-    
+    console.log(bingoCard)
     return bingoCard;
 }
 
-
-let cachedBingoOptions;
+let cachedBingoOptions = localStorage.getItem('cachedBingoOptions');
 if (cachedBingoOptions) {
   cachedBingoOptions = JSON.parse(cachedBingoOptions);
 } 
 else {
     cachedBingoOptions = buildBingoCard();
-  localStorage.setItem('cachedBingoOptions', JSON.stringify(cachedBingoOptions));
+    console.log(cachedBingoOptions)
+    localStorage.setItem('cachedBingoOptions', JSON.stringify(cachedBingoOptions));
 }
+console.log(cachedBingoOptions)
 
 // insert bingo options
 const bingoCardItems = document.querySelectorAll('.bingo-card__item');
 bingoCardItems.forEach((item, index) => {
-    let text = "";
-    let isMarked = false;
-    if (index < cachedBingoOptions.length) {
-        text = cachedBingoOptions[index].text;
-    }
-    
+    let text = cachedBingoOptions[index].text;
+    let isMarked = cachedBingoOptions[index].isMarked;
+    console.log(cachedBingoOptions[index])
     if (isMarked) {
-            item.innerHTML = `${text}<span class="bingo-card__checkbox active"></span>`;
+        item.innerHTML = `${text}<span class="bingo-card__checkbox"></span>`;
+        item.className += " active"
     }
     else {
-            item.innerHTML = `${text}<span class="bingo-card__checkbox"></span>`;
+        item.innerHTML = `${text}<span class="bingo-card__checkbox"></span>`;
     }
+});
+
+
+$(".bingo-card__item").on('click', function() {
+    $(this).toggleClass('active');
+    let index = $(this).data('index');
+    cachedBingoOptions[index].isMarked = !cachedBingoOptions[index].isMarked;
+    console.log(cachedBingoOptions);
+    localStorage.setItem('cachedBingoOptions', JSON.stringify(cachedBingoOptions));
+});
+
+$('.clear-button').on('click', function(){
+    $('.bingo-card__item').removeClass('active');
+    let index = $(this).data('index');
+    cachedBingoOptions[index].isMarked = false;
+    console.log(cachedBingoOptions);
+    localStorage.setItem('cachedBingoOptions', JSON.stringify(cachedBingoOptions));
 });
