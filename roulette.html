@@ -96,6 +96,8 @@
       let themeOption = getUrlParameter('themeOption').trim();
       let filterUnpopular = getUrlParameter('filterUnpopular');
       let maxDuration = getUrlParameter('maxDuration');
+      let transitionSrc = "./transition.mp4";
+
 
 
     if (!delay) {
@@ -250,12 +252,12 @@
         }, 500); // wait time
 
         // Video Clip
-        $("<video id='clip' class='video fade' width='100%' height='100%' autoplay poster='" + clip_poster + "'>" + lowQualityVideo + "<source src='" + clip_url + "' type='video/mp4'></video>").appendTo("#container");
+        $("<video style='background: black' id='clip' class='video fade' width='100%' height='100%' autoplay poster='" + clip_poster + "'>" + lowQualityVideo + "<source id='videosource' src='" + clip_url + "' type='video/mp4'></video>").appendTo("#container");
 
         // Remove video after timeout has been reached
         setTimeout(() => {
-            console.log("DO ANOTHER!")
-
+            $("<video id='clipTransition' class='video fade' volume=0.2 width='100%' height='100%' autoplay src='"+transitionSrc+"'></video>").appendTo("#container");
+            document.getElementById("clipTransition").volume = 0.3;
             // Remove existing video element
             if (document.getElementById("clip")) {
                 document.getElementById("clip").remove();
@@ -267,9 +269,25 @@
                 document.getElementById("details-container").remove();
             }
 
-            clips = clips.sort((a, b) => 0.5 - Math.random()); // shuffle
-            playNext(clips);
-        }, (clip_duration+1)*1000);
+            setTimeout(() => {
+                console.log("DO ANOTHER!")
+
+                // Remove existing video element
+                if (document.getElementById("clipTransition")) {
+                    document.getElementById("clipTransition").remove();
+                }
+                if (document.getElementById("text-container")) {
+                    document.getElementById("text-container").remove();
+                }
+                if (document.getElementById("details-container")) {
+                    document.getElementById("details-container").remove();
+                }
+
+                clips = clips.sort((a, b) => 0.5 - Math.random()); // shuffle
+                playNext(clips);
+            }, 800);
+
+        }, clip_duration*1000);
     }
 
     function doShoutOut(getChannel, replayClip = false, watchClip = false) {
@@ -314,6 +332,7 @@
 
                             // Random clip logic
                             if (showClip === 'true') {
+                                info.data = info.data.sort((a, b) => 0.5 - Math.random()); // shuffle
                                 playNext(info.data);
                             }
 
