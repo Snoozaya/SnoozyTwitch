@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Twitch Shout-out</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="assets/js/tmi.min.js"></script>
     <script src="assets/js/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -26,6 +28,7 @@
 <body>
 
 <div id="container">
+    <img src="./brbwriting.png"/>
 </div>
 
 </body>
@@ -70,7 +73,10 @@
       let cmdArray = [];
       let client = '';
       let lowQualityVideo = '';
+
       let channelName = getUrlParameter('channel').toLowerCase().trim();
+      let friendsNames = getUrlParameter('friends').toLowerCase().trim();
+
       let showClip = getUrlParameter('showClip');
       let showRecentClip = getUrlParameter('showRecentClip');
       let showMsg = getUrlParameter('showMsg');
@@ -79,16 +85,13 @@
       let detailsText = getUrlParameter('detailsText').trim(); 
       let showImage = getUrlParameter('showImage');
       let ref = getUrlParameter('ref');
-      let modsOnly = getUrlParameter('modsOnly');
       let timeOut = getUrlParameter('timeOut');
       let command = getUrlParameter('command').trim();
       let lowQuality = getUrlParameter('lowQuality');
       let customMsg = getUrlParameter('customMsg').trim();
       let customTitle = getUrlParameter('customTitle').trim();
       let limit = getUrlParameter('limit').trim();
-      let dateRange = getUrlParameter('dateRange').trim();
-      let raided = getUrlParameter('raided').trim();
-      let raidCount = getUrlParameter('raidCount').trim();
+      let dateRange = 600;
       let delay = getUrlParameter('delay').trim();
       let themeOption = getUrlParameter('themeOption').trim();
 
@@ -98,7 +101,7 @@
     }
 
     if (!limit) {
-        limit = "20"; //default
+        limit = "100"; //default
     }
 
     if (!command) {
@@ -107,10 +110,6 @@
 
     if (!timeOut) {
         timeOut = 10; // default
-    }
-
-    if (!modsOnly) {
-        modsOnly = 'true'; // default
     }
 
     if (!showText) {
@@ -154,23 +153,9 @@
         dateRange = "&start_date=" + startDate + "T00:00:00Z&end_date=" + todayDate + "T00:00:00Z";
     }
 
-    let replay = false; // set variable. default value
-
-    let watch = false; // set variable. default value
-
     // Load theme css file if theme is set
     if (parseInt(themeOption) > 0) {
         $('head').append('<link rel="stylesheet" type="text/css" href="assets/css/theme' + themeOption + '.css">');
-    }
-
-    // Get game details function
-    function game_title(game_id) {
-        let $jsonParse = JSON.parse($.getJSON({
-            'url': "https://twitchapi.teklynk.com/getgame.php?id=" + game_id,
-            'async': false
-        }).responseText);
-
-        return $jsonParse;
     }
 
     // Twitch API get user info for !so command
@@ -189,7 +174,6 @@
         xhrU.send();
     };
 
-    // Twitch API get last game played from a user
     let getStatus = function (SOChannel, callback) {
         let urlG = "https://twitchapi.teklynk.com/getuserstatus.php?channel=" + SOChannel + "";
         let xhrG = new XMLHttpRequest();
@@ -243,156 +227,6 @@
         return chatmsg.match(urlRegex)
     }
 
-    // If Auth token is set, then connect to chat using oauth, else connect anonymously.
-    if (ref) {
-        client = new tmi.Client({
-            options: {
-                debug: true,
-                skipUpdatingEmotesets: true
-            },
-            connection: {reconnect: true},
-            identity: {
-                username: channelName,
-                password: 'oauth:' + atob(ref)
-            },
-            channels: [channelName]
-        });
-    } else {
-        client = new tmi.Client({
-            options: {
-                debug: true,
-                skipUpdatingEmotesets: true
-            },
-            connection: {reconnect: true},
-            channels: [channelName]
-        });
-    }
-
-    client.connect().catch(console.error);
-
-    // triggers on message
-    client.on('chat', (channel, user, message, self) => {
-
-        // Ignore echoed messages.
-        if (self) {
-            return false;
-        }
-
-        // If message contains a clip url
-        if (message.includes('https://clips.twitch.tv/')) {
-
-            // Remove trailing spaces from message
-            message = message.trim();
-
-            // get the url from the chat message
-            let chatClipUrl = detectURLs(message);
-
-            // parse url into an array
-            let urlArr = chatClipUrl[0].split('/');
-
-            // extract the clip id/slug from the url
-            let clip_Id = urlArr[3];
-
-            // remove everything in the url after the '?'
-            clip_Id = clip_Id.split('?')[0];
-
-            // get the clip_url from the api
-            getClipUrl(clip_Id, function (info) {
-                if (info.data[0]['clip_url']) {
-                    // save the clip url to localstorage
-                    localStorage.setItem('twitchSOWatchClip', info.data[0]['clip_url']);
-                }
-            });
-
-        }
-
-        if (user['message-type'] === 'chat' && message.startsWith('!') && (user.mod || user.username === channelName)) {
-
-            // Hard-coded commands to control the clips
-            if (message === "!sostop" || message === "!stopso" || message === "!stopclip" || message === "!clipstop" || message === "!clipreload") {
-
-                // Reloads browser source
-                window.location.reload();
-
-            // Replay previous shout-out clip
-            } else if (message === "!clipreplay" || message === "!replayclip" || message === "!soreplay" || message === "!replayso") {
-
-                console.log("Replaying SO");
-
-                watch = false;
-                replay = true;
-
-                if (localStorage.getItem('twitchSOChannel') && localStorage.getItem('twitchSOClipUrl')) {
-                    doShoutOut(localStorage.getItem('twitchSOChannel'), true, false);
-                }
-
-            // Watch a clip from chat
-            } else if (message === "!watchclip") {
-
-                console.log("Watching a clip from chat");
-
-                watch = true;
-                replay = false;
-
-                if (localStorage.getItem('twitchSOWatchClip')) {
-                    doShoutOut(channelName, false, true);
-                }
-
-            } else {
-
-                watch = false;
-                replay = false;
-
-            }
-
-            // If message starts with custom command + space. !so teklynk
-            if (message.startsWith('!' + command + ' ')) {
-
-                // Ignore if video clip is playing
-                if (document.getElementById("clip") || document.getElementById("text-container")) {
-                    return false; // Exit and Do nothing
-                }
-
-                getChannel = message.substr(command.length + 1);
-                getChannel = getChannel.replace('@', '');
-                getChannel = getChannel.trim();
-                getChannel = getChannel.toLowerCase();
-
-                console.log(getChannel);
-
-                // Create an array of channel names
-                cmdArray = message.split('@'); //Split channel names using the @ symbol
-                cmdArray = cmdArray.slice(1);
-                cmdArray = cmdArray.filter(String);
-
-            } else {
-                return false; // Exit and Do nothing else
-            }
-
-            if (modsOnly === 'true' && (user.mod || user.username === channelName)) {
-                // If is array, then iterate over each channel name. Uses the timeOut value from the URL.
-                if (cmdArray.length > 1) {
-                    console.log(cmdArray);
-                    arrayPlusDelay(cmdArray, function (obj) {
-                        obj = obj.replace('@', '');
-                        obj = obj.trim();
-                        obj = obj.toLowerCase();
-
-                        console.log('In Array: ' + obj);
-
-                        doShoutOut(obj);
-
-                    }, parseInt(timeOut) * 1000 + 1000); // + 1 seconds, just to be sure that elements are completely removed
-                } else {
-                    console.log(getChannel);
-                    doShoutOut(getChannel); // Mods only
-                }
-            } else if (modsOnly === 'false' || user.username === channelName) {
-                doShoutOut(getChannel); // Everyone
-            }
-        }
-    });
-
     function doShoutOut(getChannel, replayClip = false, watchClip = false) {
 
         getStatus(getChannel, function (info) {
@@ -402,33 +236,6 @@
                 // Ignore if video clip is playing
                 if (document.getElementById("clip") || document.getElementById("text-container")) {
                     return false; // Exit and Do nothing
-                }
-
-                if (showMsg === 'true') {
-                    if (replay === true || watch === true) {
-                        // If replaying or watching a clip, say nothing.
-                        client.say(channelName,"");
-                    } else {
-                        // If user has streamed anything then say message
-                        if (info.data[0]['game_name']) {
-                            if (customMsg) {
-                                customMsg = getUrlParameter('customMsg').trim();
-                                customMsg = customMsg.replace("{channel}", info.data[0]['broadcaster_name']);
-                                customMsg = customMsg.replace("{game}", info.data[0]['game_name']);
-                                customMsg = customMsg.replace("{title}", info.data[0]['title']);
-                                customMsg = customMsg.replace("{url}", "https://twitch.tv/" + info.data[0]['broadcaster_login']);
-                                // Say custom message in chat
-                                client.say(channelName, decodeURIComponent(customMsg));
-                            } else {
-                                // Say default message in chat
-                                client.say(channelName, "Go check out " + info.data[0]['broadcaster_name'] + "! They were playing: " + info.data[0]['game_name'] + " - " + info.data[0]['title'] + " - https://twitch.tv/" + info.data[0]['broadcaster_login']);
-                            }
-                            // Say generic message in chat
-                        } else {
-                            client.say(channelName, "Go check out " + info.data[0]['broadcaster_name'] + "! https://twitch.tv/" + info.data[0]['broadcaster_login']);
-                        }
-                    }
-
                 }
 
                 // Show Clip
@@ -487,22 +294,7 @@
                             }
 
                             // Text on top of clip
-                            if (showText === 'true') {
-                                if (customTitle) {
-                                    customTitle = getUrlParameter('customTitle').trim();
-                                    if (customTitle.includes("{channel}")) {
-                                        customTitle = customTitle.replace("{channel}", info.data[indexClip]['broadcaster_name']);
-                                    }
-                                    if (customTitle.includes("{url}")) {
-                                        customTitle = customTitle.replace("{url}", "twitch.tv/" + info.data[indexClip]['broadcaster_name'].toLowerCase());
-                                    }
-                                    titleText = "<div id='text-container' class='hide'><span class='title-text'>" + decodeURIComponent(customTitle) + "</span></div>"
-                                } else {
-                                    titleText = "<div id='text-container' class='hide'><span class='title-text'>Go check out " + info.data[0]['broadcaster_name'] + "</span></div>"
-                                }
-                            } else {
-                                titleText = '';
-                            }
+                            titleText = '';
 
                             if (watchClip === true) {
                                 if (document.getElementById("text-container")) {
@@ -595,7 +387,7 @@
                                     }
                                     
                                 } else {
-                                    clipDetailsText = "<div id='details-container' class='hide'><span class='details-text'>Go check out " + info.data[indexClip]['broadcaster_name'] + "</span></div>"
+                                    clipDetailsText = "<div id='details-container' class='hide'><span class='details-text'>x</span></div>"
                                 }
                                 
                             } else {
@@ -624,6 +416,9 @@
                                     }
                                     timer = 0; // reset timer to zero
                                     clearInterval(startTimer);
+
+                                    console.log("DO ANOTHER!")
+                                    doShoutOut(channelName);
                                 }
 
                             }, 1000);
@@ -642,72 +437,15 @@
                                 }
                                 timer = 0; // reset timer to zero
                                 clearInterval(startTimer);
-                            };
 
-                            if (watch === false) {
-                                // Save clip url to localstorage so that it can be replayed if needed
-                                localStorage.setItem('twitchSOClipUrl', clip_url);
-                                localStorage.setItem('twitchSOChannel', getChannel);
-                            }
+                                console.log("DO ANOTHER!")
+                                doShoutOut(channelName);
+                            };
 
                         } else {
 
                             console.log('no clips found!');
-
-                            // Show profile image if no clips exist
-                            if (showImage === 'true') {
-
-                                console.log('show profile image!');
-
-                                getInfo(getChannel, function (info) {
-                                    let userImage = info.data[0]['profile_image_url'];
-
-                                    // Text on top of clip
-                                    if (showText === 'true') {
-                                        titleText = "<div id='text-container'><span class='title-text'>Go check out " + info.data[0]['display_name'] + "</span></div>"
-                                    } else {
-                                        titleText = '';
-                                    }
-
-                                    // Profile Image
-                                    $(titleText + "<img id='profile' class='fade img-fluid' src='" + userImage + "'>").appendTo("#container");
-
-                                    // Timeout start
-                                    let timer = 0;
-
-                                    // Remove Profile Image after timeout has been reached
-                                    let startTimer = setInterval(function () {
-                                        timer++; // Increment timer
-
-                                        console.log(timer);
-
-                                        // hardcoded timer value. This timer is idependent of the timeOut url param.
-                                        if (timer === 5) {
-                                            // Remove existing profile image element
-                                            if (document.getElementById("profile")) {
-                                                document.getElementById("profile").remove();
-                                            }
-                                            if (document.getElementById("clip")) {
-                                                document.getElementById("clip").remove();
-                                            }
-                                            if (document.getElementById("text-container")) {
-                                                document.getElementById("text-container").remove();
-                                            }
-                                            if (document.getElementById("details-container")) {
-                                                document.getElementById("details-container").remove();
-                                            }
-                                            timer = 0; // reset timer to zero
-                                            clearInterval(startTimer);
-                                        }
-
-                                    }, 1000);
-                                });
-
-                            } else {
-
-                                return false; // Exit and Do nothing
-
-                            }
+                            return false; // Exit and Do nothing
                         }
                     });
                 }
@@ -721,20 +459,7 @@
         });
     }
 
-    // Automatically shout-out channel on raid
-    if (raided === "true") {
-        client.on("raided", (channel, username, viewers) => {
-            // Checks if raid viewer count - default is 3
-            if (viewers >= parseInt(raidCount)) {
-                // Delay before doing the shout-out to allow for other raid alerts to fire off
-                setTimeout(function () {
-                    console.log(username + ': is raiding!');
-                    console.log(delay + ' second: delay');
-                    doShoutOut(username);
-                }, parseInt(delay) * 1000);
-            }
-        });
-    }
+    doShoutOut(channelName);
 
 });
   </script>
