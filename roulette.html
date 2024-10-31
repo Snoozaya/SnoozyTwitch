@@ -272,20 +272,12 @@
                             }
 
                             // Get and set variable clip_url from json
+                            console.log(info.data[indexClip])
                             let clip_url = info.data[indexClip]['clip_url'];
 
                             let clip_poster = info.data[indexClip]['thumbnail_url'].replace('-480x272','');
-
-                            // If chat command = !replayclip
-                            if (replayClip === true) {
-                                clip_url = localStorage.getItem('twitchSOClipUrl');
-                                console.log('Replaying: ' + clip_url);
-                            // If chat command = !watchclip
-                            } else if (watchClip === true) {
-                                clip_url = localStorage.getItem('twitchSOWatchClip');
-                                console.log('Watching: ' + clip_url);
-                            }
-
+                            
+                            let clip_duration = info.data[indexClip].duration;
                             // Low clip quality mode
                             if (lowQuality === 'true') {
                                 lowQualityVideo = "<source src='" + clip_url.replace('.mp4', '-360.mp4') + "' type='video/mp4'>";
@@ -403,7 +395,7 @@
 
                                 console.log(timer);
 
-                                if (timer === parseInt(timeOut)) {
+                                if (timer > clip_duration) {
                                     // Remove existing video element
                                     if (document.getElementById("clip")) {
                                         document.getElementById("clip").remove();
