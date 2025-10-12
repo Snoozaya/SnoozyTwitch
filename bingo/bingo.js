@@ -1,4 +1,5 @@
-const freeSpace = "zaya is behind on chat"
+const freeSpace = "zaya is behind on chat";
+const lastUpdatedTimestamp = 1760291978;
 const bingoOptions = [
     "Someone's back gets broken 🫂",
     "Technical issues ⚠️",
@@ -58,14 +59,17 @@ function buildBingoCard() {
     return bingoCard;
 }
 
-let cachedBingoOptions = localStorage.getItem('cachedBingoOptions');
-if (cachedBingoOptions) {
-  cachedBingoOptions = JSON.parse(cachedBingoOptions);
+let cachedBingoOptions;
+let cachedData = localStorage.getItem('cachedBingoOptions');
+if (cachedData.options && cachedData.timestamp > lastUpdatedTimestamp) {
+  cachedBingoOptions = JSON.parse(cachedData.options);
 } 
 else {
     cachedBingoOptions = buildBingoCard();
-    console.log(cachedBingoOptions)
-    localStorage.setItem('cachedBingoOptions', JSON.stringify(cachedBingoOptions));
+    localStorage.setItem('cachedBingoOptions', JSON.stringify({
+        options: cachedBingoOptions,
+        timestamp: Date.now(),
+    }));
 }
 console.log(cachedBingoOptions)
 
