@@ -61,6 +61,7 @@ function buildBingoCard() {
 
 let cachedBingoOptions;
 let cachedData = localStorage.getItem('cachedBingoOptions');
+console.log(cachedData);
 if (cachedData.options && cachedData.timestamp > lastUpdatedTimestamp) {
   cachedBingoOptions = JSON.parse(cachedData.options);
 } 
@@ -94,7 +95,10 @@ $(".bingo-card__item").on('click', function() {
     let index = $(this).data('index');
     cachedBingoOptions[index].isMarked = !cachedBingoOptions[index].isMarked;
     console.log(cachedBingoOptions);
-    localStorage.setItem('cachedBingoOptions', JSON.stringify(cachedBingoOptions));
+    localStorage.setItem('cachedBingoOptions', JSON.stringify({
+        options: cachedBingoOptions,
+        timestamp: Date.now(),
+    }));
 });
 
 $('.clear-button').on('click', function(){
@@ -102,5 +106,8 @@ $('.clear-button').on('click', function(){
     let index = $(this).data('index');
     cachedBingoOptions[index].isMarked = false;
     console.log(cachedBingoOptions);
-    localStorage.setItem('cachedBingoOptions', JSON.stringify(cachedBingoOptions));
+    localStorage.setItem('cachedBingoOptions', JSON.stringify({
+        options: cachedBingoOptions,
+        timestamp: Date.now(),
+    }));
 });
