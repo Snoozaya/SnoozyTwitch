@@ -60,19 +60,23 @@ function buildBingoCard() {
 }
 
 let cachedBingoOptions;
+let creationTimestamp;
 let cachedData = localStorage.getItem('cachedBingoOptions');
 console.log(cachedData);
+console.log(cachedData.options);
+console.log(cachedData.timestamp);
+console.log(cachedData.timestamp > lastUpdatedTimestamp);
 if (cachedData.options && cachedData.timestamp > lastUpdatedTimestamp) {
   cachedBingoOptions = JSON.parse(cachedData.options);
 } 
 else {
     cachedBingoOptions = buildBingoCard();
+    creationTimestamp = Date.now();
     localStorage.setItem('cachedBingoOptions', JSON.stringify({
         options: cachedBingoOptions,
-        timestamp: Date.now(),
+        timestamp: creationTimestamp,
     }));
 }
-console.log(cachedBingoOptions)
 
 // insert bingo options
 const bingoCardItems = document.querySelectorAll('.bingo-card__item');
@@ -97,7 +101,7 @@ $(".bingo-card__item").on('click', function() {
     console.log(cachedBingoOptions);
     localStorage.setItem('cachedBingoOptions', JSON.stringify({
         options: cachedBingoOptions,
-        timestamp: Date.now(),
+        timestamp: creationTimestamp,
     }));
 });
 
@@ -108,6 +112,6 @@ $('.clear-button').on('click', function(){
     console.log(cachedBingoOptions);
     localStorage.setItem('cachedBingoOptions', JSON.stringify({
         options: cachedBingoOptions,
-        timestamp: Date.now(),
+        timestamp: creationTimestamp,
     }));
 });
