@@ -1,29 +1,30 @@
-const freeSpace = "zaya is behind on chat"
+const freeSpace = "zaya is behind on chat";
+const lastUpdatedTimestamp = 1760291978;
 const bingoOptions = [
-    "Zaya tells someone to “get fucked”",
-    "Hidan was jailed",
-    "Zaya tells felina she loves her",
-    "Audio unsyncs",
-    "professional strimmer moment / technical issues",
-    "cat walks in front of camera",
-    "Zaya mentions twilight unprompted",
-    "Zaya greets or mentions you",
-    "someone asks if contacts or fangs are real",
-    "Zaya gets raided",
-    "Zaya fake cries",
-    "Zaya cries fr",
-    "misreads or struggles to read name",
-    "Zaya word garbles brkjbeikrfbekrf",
-    "Zaya falls for the eyewear-roll",
-    "Zaya leaks dms",
-    "unholy trinity of sound redeems",
-    "Yeeves message gets deleted",
+    "Someone's back gets broken 🫂",
+    "Technical issues ⚠️",
+    "Someone gets jailed",
+    "Cat spotted on main cam 🐈",
+    "Twilight reference dropped unprompted",
+    "Incomming Raid!",
+    "Zaya says your name",
+    "Hype train!",
+    "Real crying 😢",
+    "Successful jumpscare 👻",
     "Zaya thirsts over Yop",
-    "Zaya gets jumpscared",
-    "cats copypasta (no cheating)",
-    "Finn spit on hand",
-    "Zaya info dumps",
-    "Zaya missed your msg"
+    "Zaya cant fecking read",
+    "Yop teases / makes fun of Zaya",
+    "Coffee refill ☕",
+    "DMs get leaked 😳",
+    "Zaya Tangia is used 🍊",
+    "Zaya laughs at their own joke 🙄",
+    "Zaya sings 🎵",
+    "German Valley Girl 💀",
+    "Zaya gushes over how cute Finn or Cinni is",
+    "Jayvik or KDH mentioned",
+    "Someone gets roasted by Zaya 🔥",
+    "Close-up of dissapointment 😒",
+    "TTS is making sus noises"
 ];
 
 function shuffleArray(array) {
@@ -58,16 +59,24 @@ function buildBingoCard() {
     return bingoCard;
 }
 
-let cachedBingoOptions = localStorage.getItem('cachedBingoOptions');
-if (cachedBingoOptions) {
-  cachedBingoOptions = JSON.parse(cachedBingoOptions);
+let cachedBingoOptions;
+let creationTimestamp;
+let cachedData = localStorage.getItem('cachedBingoOptions');
+console.log(cachedData);
+console.log(cachedData.options);
+console.log(cachedData.timestamp);
+console.log(cachedData.timestamp > lastUpdatedTimestamp);
+if (cachedData.options && cachedData.timestamp > lastUpdatedTimestamp) {
+  cachedBingoOptions = JSON.parse(cachedData.options);
 } 
 else {
     cachedBingoOptions = buildBingoCard();
-    console.log(cachedBingoOptions)
-    localStorage.setItem('cachedBingoOptions', JSON.stringify(cachedBingoOptions));
+    creationTimestamp = Date.now();
+    localStorage.setItem('cachedBingoOptions', JSON.stringify({
+        options: cachedBingoOptions,
+        timestamp: creationTimestamp,
+    }));
 }
-console.log(cachedBingoOptions)
 
 // insert bingo options
 const bingoCardItems = document.querySelectorAll('.bingo-card__item');
@@ -90,7 +99,10 @@ $(".bingo-card__item").on('click', function() {
     let index = $(this).data('index');
     cachedBingoOptions[index].isMarked = !cachedBingoOptions[index].isMarked;
     console.log(cachedBingoOptions);
-    localStorage.setItem('cachedBingoOptions', JSON.stringify(cachedBingoOptions));
+    localStorage.setItem('cachedBingoOptions', JSON.stringify({
+        options: cachedBingoOptions,
+        timestamp: creationTimestamp,
+    }));
 });
 
 $('.clear-button').on('click', function(){
@@ -98,5 +110,8 @@ $('.clear-button').on('click', function(){
     let index = $(this).data('index');
     cachedBingoOptions[index].isMarked = false;
     console.log(cachedBingoOptions);
-    localStorage.setItem('cachedBingoOptions', JSON.stringify(cachedBingoOptions));
+    localStorage.setItem('cachedBingoOptions', JSON.stringify({
+        options: cachedBingoOptions,
+        timestamp: creationTimestamp,
+    }));
 });

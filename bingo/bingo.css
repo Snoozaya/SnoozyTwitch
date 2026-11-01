@@ -54,7 +54,7 @@
 	overflow: hidden;
   }
   .title {
-	background: #0b8cfd;
+	background: #e50bfd;
 	color: #fff;
 	padding: 30px 10px;
 	grid-column: span 5;
@@ -76,7 +76,7 @@
 	}
   }
   .bingo-card {
-	background: #0762b3;
+	background: #6b07b3;
 	padding: 10px;
 	display: grid;
 	grid-gap: 3px;
@@ -101,7 +101,7 @@
 	position: absolute;
 	top: -28%;
 	left: -30%;
-	color: #0762b3;
+	color: #6b07b3;
 	width: 100%;
 	opacity: 0;
 	transition: 0.1s ease;
@@ -124,7 +124,7 @@
 	color: black;
 	left: 0;
 	top: -19px;
-	color: #0b8cfd;
+	color: #e50bfd;
 	font: 30px "Caveat Brush", cursive;
   }
   .bingo-card__checkbox {
@@ -137,11 +137,11 @@
 	cursor: pointer;
 	display: inline-block;
 	border: 2px dotted;
-	color: #0b8cfd;
+	color: #e50bfd;
 	padding: 8px 10px;
   }
   .clear-button:hover {
-	color: #0b8cfd;
+	color: #e50bfd;
   }
   @media screen and (max-width: 600px) {
 	.main-content {
@@ -175,7 +175,7 @@
 	  width: 20px;
 	  height: 20px;
 	  left: 10px;
-	  border: 2px dashed #0762b3;
+	  border: 2px dashed #6b07b3;
 	}
   }
   
