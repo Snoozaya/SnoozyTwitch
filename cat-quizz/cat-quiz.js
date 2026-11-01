@@ -184,6 +184,16 @@ const QUESTIONS = [
   }
 ];
 
+const abomination = {
+  id: "abomination",
+  name: "The Abomination",
+  subtitle: "I know what you are... - say it! Out loud. - ...abomination.",
+  description: "I can't tell if you have no personality or TOO MUCH personality and honestly I'm not sure I want to know. I hope for your sake, you are a mix of the best of all cats, because if its a mix of the worst... not even our lord and saviour Finnus Christ could help you.",
+  traits: ["Contradictory", "Menace but... nice?", "Pervy Creep but in a cute way"],
+  colors: ["#E8E0ED", "#A88CB8", "#493653"],
+  image: "./abomination.png"
+}
+
 
 const $ = (selector) => document.querySelector(selector);
 const welcome = $("#welcome");
@@ -288,14 +298,20 @@ function showResult() {
 
   const maxScore = Math.max(...Object.values(scores));
 
+  const sortedScores = Object.entries(scores)
+    .sort((a, b) => b[1] - a[1]);
+  const highestScore = sortedScores[0][1];
+  const lowestScore = sortedScores[sortedScores.length - 1][1];
+  const isAbomination = highestScore - lowestScore <= 1;
+
   const winners = CATS.filter(
     cat => scores[cat.id] === maxScore
   );
 
   // Randomly select a winner if multiple cats tie.
-  const winner = winners[
-    Math.floor(Math.random() * winners.length)
-  ];
+  const winner = isAbomination
+    ? abomination
+    : winners[Math.floor(Math.random() * winners.length)];
 
   // Calculate each cat's share of all points earned.
   const totalScore = Object.values(scores).reduce(
